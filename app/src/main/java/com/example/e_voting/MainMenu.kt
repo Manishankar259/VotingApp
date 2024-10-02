@@ -5,8 +5,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.content.Intent
+import android.widget.Button
 
 class MainMenu : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -15,6 +18,17 @@ class MainMenu : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        // Reference the button from the layout
+        val openSecondActivityButton: Button = findViewById(R.id.startVotingButton)
+
+        // Set an OnClickListener to the button to open the second activity
+        openSecondActivityButton.setOnClickListener {
+            // Create an intent to open the SecondActivity
+            val intent = Intent(this, MainActivity4::class.java)
+            // Start the activity
+            startActivity(intent)
         }
     }
 }
