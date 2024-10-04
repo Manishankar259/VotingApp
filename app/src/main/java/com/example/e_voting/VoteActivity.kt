@@ -10,14 +10,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class MainActivity4 : AppCompatActivity() {
+class VoteActivity : AppCompatActivity() {
 
     private lateinit var  editTextZipcode: EditText
     private  lateinit var buttonSearchRegion: Button
     private  lateinit var textViewRegion: TextView
+    private  var regionName= ""
 
     //Firebase firestore instance
     private val db = FirebaseFirestore.getInstance()
@@ -25,7 +28,7 @@ class MainActivity4 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main3)
+        setContentView(R.layout.activity_vote)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -47,8 +50,9 @@ class MainActivity4 : AppCompatActivity() {
 
                 // Call the function to fetch the region from Firebase
                 fetchRegionFromZipcode(firstThreeChars)
+//                fetchCandidateName(regionName)
             } else {
-                Toast.makeText(this@MainActivity4, "Please enter a valid zipcode", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@VoteActivity, "Please enter a valid zipcode", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -58,12 +62,14 @@ class MainActivity4 : AppCompatActivity() {
         // Reference to the "Zipcode" collection and the document with the first three letters of the zip code
         val docRef = db.collection("Zipcode").document(zipcodeRef)
 
-        // Fetch the document
+        // Fetch the region name
         docRef.get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
                     // Retrieve the "region" field from the document
                     val region = document.getString("region")
+                    //regionName = region.toString()
+                    fetchCandidateName(region.toString())
                     if (region != null) {
                         // Set the region name to the TextView
                         textViewRegion.text = "Region: $region"
@@ -83,7 +89,40 @@ class MainActivity4 : AppCompatActivity() {
                 Log.w("Firestore", "Error fetching document", exception)
                 Toast.makeText(this, "Error fetching region", Toast.LENGTH_SHORT).show()
             }
+
+
     }
 
+    private fun fetchCandidateName(regionRef: String){
+        // Fetch candidate name
+        val docRefCan = db.collection("Regions").document(regionRef)
+        docRefCan.get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val candidatesList = document.get("candidates") as? List<Map<String, String>> ?: emptyList()
+                    val formattedCandidates = candidatesList.map { candidate ->
+                        "${candidate["name"]} (${candidate["party"]})"
+                    }
+
+                    // Call a method to update your RecyclerView with the list of formatted candidates
+                    updateRecyclerView(formattedCandidates)
+                } else {
+                    Log.d("Firestore", "No such document for region: $regionName")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w("Firestore", "Error fetching region document", exception)
+            }
+    }
+
+    private fun updateRecyclerView(candidates: List<String>) {
+        val recyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        val adapter = CandidatesAdapter(candidates)
+        recyclerView.adapter = adapter
+
+
+
+    }
 
 }

@@ -26,7 +26,7 @@ class MainMenu : AppCompatActivity() {
         // Set an OnClickListener to the button to open the second activity
         openSecondActivityButton.setOnClickListener {
             // Create an intent to open the SecondActivity
-            val intent = Intent(this, MainActivity4::class.java)
+            val intent = Intent(this, VoteActivity::class.java)
             // Start the activity
             startActivity(intent)
         }
