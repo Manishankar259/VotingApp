@@ -7,14 +7,15 @@ import android.widget.CheckBox
 import androidx.recyclerview.widget.RecyclerView
 
 class CandidatesAdapter(
-    private val candidates: List<String>
+    private val candidates: List<String>,
+    private val onCandidateSelected: (String) -> Unit // Pass a function to handle the selected candidate
 ) : RecyclerView.Adapter<CandidatesAdapter.CandidateViewHolder>() {
 
     // Variable to hold the currently selected candidate position
-    private var selectedPosition = -1
+    var selectedPosition = -1
 
     class CandidateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val candidateCheckBox: CheckBox = itemView.findViewById(R.id.checkBox) // Assuming your CheckBox has this id
+        val candidateCheckBox: CheckBox = itemView.findViewById(R.id.checkBox)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CandidateViewHolder {
@@ -41,6 +42,8 @@ class CandidatesAdapter(
                         notifyItemChanged(selectedPosition) // Uncheck previous checkbox
                     }
                     selectedPosition = holder.adapterPosition // Update selected position
+                    // Pass the selected candidate name to the caller
+                    onCandidateSelected(candidateName)
                     notifyItemChanged(selectedPosition) // Refresh current item
                 }
             } else if (selectedPosition == holder.adapterPosition) {
@@ -51,10 +54,12 @@ class CandidatesAdapter(
             }
         }
 
+
     }
 
     override fun getItemCount(): Int {
         return candidates.size
     }
+
 }
 

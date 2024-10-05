@@ -91,4 +91,11 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_result">ResultActivity</string>
+
+    <string-array name="locations_array">
+        <item>Sherbrooke</item>
+        <item>Trois-Rivières</item>
+        <item>Compton-Stanstead</item>
+    </string-array>
 </resources>
